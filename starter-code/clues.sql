@@ -8,6 +8,28 @@ SELECT name, region, population FROM country WHERE region = 'Southern Europe' OR
 Holy See (Vatican City State) | Southern Europe |       1000
 (1 row)
 
+-- My Answer
+carmen=# SELECT name, region, population FROM country WHERE region = 'Southern Europe' 
+
+             name              |     region      | population 
+-------------------------------+-----------------+------------
+ Albania                       | Southern Europe |    3401200
+ Andorra                       | Southern Europe |      78000
+ Bosnia and Herzegovina        | Southern Europe |    3972000
+ Spain                         | Southern Europe |   39441700
+ Gibraltar                     | Southern Europe |      25000
+ Italy                         | Southern Europe |   57680000
+ Yugoslavia                    | Southern Europe |   10640000
+ Greece                        | Southern Europe |   10545700
+ Croatia                       | Southern Europe |    4473000
+ Macedonia                     | Southern Europe |    2024000
+ Malta                         | Southern Europe |     380200
+ Portugal                      | Southern Europe |    9997600
+ San Marino                    | Southern Europe |      27000
+ Slovenia                      | Southern Europe |    1987800
+ Holy See (Vatican City State) | Southern Europe |       1000
+(15 rows)
+
 
 -- Clue #2: Now that we're here, we have insight that Carmen was seen attending language classes in
 -- this country's officially recognized language. Check our databases and find out what language is
@@ -17,6 +39,16 @@ SELECT country.name, country.region, country.population, countrylanguage.languag
 -------------------------------+-----------------+------------+----------
 Holy See (Vatican City State) | Southern Europe |       1000 | Italian
 (1 row)
+
+-- My answer
+carmen=# SELECT * FROM country WHERE name = 'Holy See (Vatican City State)';
+carmen=# SELECT * FROM countrylanguage WHERE countrycode = 'VAT';
+
+ countrycode | language | isofficial | percentage 
+-------------+----------+------------+------------
+ VAT         | Italian  | t          |          0
+(1 row)
+
 
 -- Clue #3: We have new news on the classes Carmen attended – our gumshoes tell us she's moved on
 -- to a different country, a country where people speak only the language she was learning. Find out which
@@ -41,6 +73,30 @@ SELECT country.name, country.region, country.surfacearea, countrylanguage.langua
  Brazil                        | South America             | 8.547403e+06 | Italian
  United States                 | North America             |  9.36352e+06 | Italian
  Canada                        | North America             |  9.97061e+06 | Italian
+
+ -- My Answer
+ SELECT country.name, country.region, countrylanguage.language FROM country JOIN countrylanguage ON country.code = countrylanguage.countrycode  WHERE countrylanguage.language = 'Italian' 
+
+             name              |          region           | language 
+-------------------------------+---------------------------+----------
+ Argentina                     | South America             | Italian
+ Australia                     | Australia and New Zealand | Italian
+ Belgium                       | Western Europe            | Italian
+ Brazil                        | South America             | Italian
+ Italy                         | Southern Europe           | Italian
+ Canada                        | North America             | Italian
+ Liechtenstein                 | Western Europe            | Italian
+ Luxembourg                    | Western Europe            | Italian
+ Monaco                        | Western Europe            | Italian
+ France                        | Western Europe            | Italian
+ Germany                       | Western Europe            | Italian
+ San Marino                    | Southern Europe           | Italian
+ Switzerland                   | Western Europe            | Italian
+ Holy See (Vatican City State) | Southern Europe           | Italian
+ United States                 | North America             | Italian
+(15 rows)
+
+
 -- Clue #4: We're booking the first flight out – maybe we've actually got a chance to catch her this time.
  -- There are only two cities she could be flying to in the country. One is named the same as the country – that
  -- would be too obvious. We're following our gut on this one; find out what other city in that country she might
@@ -50,6 +106,16 @@ SELECT city.name, country.name, countrylanguage.language, country.continent, cou
 city name | country name | language | continent |  region      
 ------------+------------+----------+-----------+-----------------
  San Marino | San Marino | Italian  | Europe    | Southern Europe
+
+-- My Answer
+ carmen=# SELECT * FROM country WHERE name = 'San Marino';
+carmen=# SELECT * FROM city WHERE countrycode = 'SMR';
+  id  |    name    | countrycode |     district      | population 
+------+------------+-------------+-------------------+------------
+ 3170 | Serravalle | SMR         | Serravalle/Dogano |       4802
+ 3171 | San Marino | SMR         | San Marino        |       2294
+(2 rows)
+
 
 -- Clue #5: Oh no, she pulled a switch – there are two cities with very similar names, but in totally different
 -- parts of the globe! She's headed to South America as we speak; go find a city whose name is like the one we were
@@ -68,12 +134,61 @@ SELECT city.name, country.name, country.continent, country.region FROM city JOIN
  San Fernando del Valle de Cata | Argentina | South America | South America
  San Nicol�s de los Arroyos   | Argentina | South America | South America
 
+ -- My Answer
+ SELECT city.name, country.name, country.continent, country.region FROM city JOIN country ON city.countrycode = country.code WHERE country.region = 'South America' AND city.name LIKE '%San%';
+
+              name              |   name    |   continent   |    region     
+--------------------------------+-----------+---------------+---------------
+ San Miguel de Tucumï¿½n        | Argentina | South America | South America
+ General San Martï¿½n           | Argentina | South America | South America
+ Santa Fï¿½                     | Argentina | South America | South America
+ San Isidro                     | Argentina | South America | South America
+ San Miguel                     | Argentina | South America | South America
+ Santiago del Estero            | Argentina | South America | South America
+ San Salvador de Jujuy          | Argentina | South America | South America
+ San Fernando                   | Argentina | South America | South America
+ San Fernando del Valle de Cata | Argentina | South America | South America
+ San Nicolï¿½s de los Arroyos   | Argentina | South America | South America
+ San Juan                       | Argentina | South America | South America
+ San Luis                       | Argentina | South America | South America
+ San Rafael                     | Argentina | South America | South America
+ Santa Cruz de la Sierra        | Bolivia   | South America | South America
+ Santo Andrï¿½                  | Brazil    | South America | South America
+ Feira de Santana               | Brazil    | South America | South America
+ Santos                         | Brazil    | South America | South America
+ Santarï¿½m                     | Brazil    | South America | South America
+ Santa Maria                    | Brazil    | South America | South America
+ Santa Bï¿½rbara dï¿½Oeste      | Brazil    | South America | South America
+ Santa Luzia                    | Brazil    | South America | South America
+ Cabo de Santo Agostinho        | Brazil    | South America | South America
+ Vitï¿½ria de Santo Antï¿½o     | Brazil    | South America | South America
+ Santa Rita                     | Brazil    | South America | South America
+ Santa Cruz do Sul              | Brazil    | South America | South America
+ Santana do Livramento          | Brazil    | South America | South America
+ Santiago de Chile              | Chile     | South America | South America
+ San Bernardo                   | Chile     | South America | South America
+ San Pedro de la Paz            | Chile     | South America | South America
+ Santo Domingo de los Colorados | Ecuador   | South America | South America
+ Santafï¿½ de Bogotï¿½          | Colombia  | South America | South America
+ Santa Marta                    | Colombia  | South America | South America
+ San Lorenzo                    | Paraguay  | South America | South America
+ San Cristï¿½bal                | Venezuela | South America | South America
+ Santa Ana de Coro              | Venezuela | South America | South America
+ San Fernando de Apure          | Venezuela | South America | South America
+ San Felipe                     | Venezuela | South America | South America
+(37 rows)
+
+
 -- Clue #6: We're close! Our South American agent says she just got a taxi at the airport, and is headed towards
  -- the capital! Look up the country's capital, and get there pronto! Send us the name of where you're headed and we'll
  -- follow right behind you!
 
 SELECT country.name, country.capital, country.localname, city.district FROM country JOIN city ON country.code = city.countrycode WHERE country.name = 'Argentina' AND city.district = 'Buenos Aires';
 ==> Buenos Aires
+
+--My Answer
+Buenos Aires
+
 -- Clue #7: She knows we're on to her – her taxi dropped her off at the international airport, and she beat us to
  -- the boarding gates. We have one chance to catch her, we just have to know where she's heading and beat her to the
  -- landing dock HINT:Look at number 8.
@@ -86,6 +201,9 @@ SELECT country.name, country.continent, country.region, city.name, city.populati
 -- Clue #8: Lucky for us, she's getting cocky. She left us a note, and I'm sure she thinks she's very clever, but
 -- if we can crack it, we can finally put her where she belongs – behind bars.
 
+--My Answer
+Key words are somewhere warm, with a population of ninety-one thousand and now eighty five thousand.
+The eighty five thousand is where i am thrown off though.
 
 
 -- Our playdate of late has been unusually fun –
